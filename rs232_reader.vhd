@@ -23,7 +23,7 @@ architecture rtl of rs232_reader is
 
 begin
 
-  clko <= not read_sr(n + end_bits);
+  clko   <= not read_sr(n + end_bits);
   clko_o <= clko;
 
   clock : process (internal_clk_i, rst_ni) is
@@ -43,7 +43,7 @@ begin
     if (clko = '1') then
       data_out_o <= read_sr(n + end_bits - 1 downto end_bits);
       -- all end bits must be ones
-      if read_sr(end_bits - 1 downto 0) = (read_sr(end_bits - 1 downto 0)'range => '1') then
+      if (read_sr(end_bits - 1 downto 0) = (read_sr(end_bits - 1 downto 0)'range => '1')) then
         err_o <= '0';
       else
         err_o <= '1';
