@@ -26,6 +26,9 @@ end entity rs232_tester;
 architecture sim of rs232_tester is
 
   constant wait_time : time := 0 ns;
+  constant data_len : natural := 50;
+  constant data_string : std_logic_vector(data_len*8 - 1 downto 0) :=
+    x"2D01C9A459016F07B5E12BC103D2A62486460D91E2B890EEB638244B5BC254C7EF56F227ADC4FE8526569A88BFE8E0D22D0A";
 
   signal clk   : std_logic := '0';
   signal rst_n : std_logic := '0';
@@ -91,6 +94,7 @@ begin
   data_o <= data;
 
   send : process is
+    variable sent : std_logic_vector(7 downto 0);
   begin
     rst_n <= '0';
     data  <= '1';
@@ -98,25 +102,25 @@ begin
     rst_n <= '1';
     wait for 1 us;
 
+    -- Calibration packet
     send_frame(data, x"FF", bit_time);
     data <= '1';
     wait for wait_time;
 
-    for i in 0 to 5 loop
-      send_frame(data, x"3C", bit_time);
-      data <= '1';
-      wait for wait_time;
+    for j in 0 to 3 loop
+      for i in 0 to data_len - 1 loop
+        sent := data_string(data_len*8 - 1 - i*8 downto data_len*8 - 8 - i*8);
+
+        send_frame(data, sent, bit_time);
+        data <= '1';
+        wait for wait_time;
+
+      end loop;
+
+      wait for 1 ms;
     end loop;
 
-    send_frame(data, x"00", bit_time);
-    data <= '1';
-    wait for wait_time;
-
-    send_frame(data, x"DA", bit_time);
-    data <= '1';
-    wait for wait_time;
-
-    report "Tester: done."
+    report "Tester: finished."
       severity note;
     wait;
 
@@ -126,7 +130,7 @@ begin
   begin
 
     if rising_edge(done_i) then
-      report "Tester: DUT reported done, data=0x" & to_hstring(data_i) &
+      report "Tester: done, data=0x" & to_hstring(data_i) &
              " err=" & std_logic'image(err_i)
         severity note;
     end if;
