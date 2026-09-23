@@ -4,12 +4,12 @@ library ieee;
 entity rs232_receiver_tb is
 end entity rs232_receiver_tb;
 
-architecture sim of rs232_receiver_tb is
+architecture behavioral of rs232_receiver_tb is
 
   constant n          : natural := 8;
   constant end_bits   : natural := 2;
-  constant clk_period : time    := 0.5 us;  -- 2 MHz
-  constant bit_time   : time    := 17.36 us; -- ~57600 baud
+  constant clk_period : time    := 1 us;  -- 1 MHz
+  constant bit_time   : time    := 26.04 us; -- 38400 baud
 
   signal clk     : std_logic;
   signal rst_n   : std_logic;
@@ -51,4 +51,4 @@ begin
       clko_o     => done
     );
 
-end architecture sim;
+end architecture behavioral;
