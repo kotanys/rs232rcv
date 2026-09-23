@@ -31,7 +31,7 @@ architecture rtl of rs232_clock is
   signal down_count : std_logic_vector(counter_size - 2 downto 0);
   signal divider2   : std_logic;
 
-  -- 2-flop chain for (data -> st_idle) transition
+  -- 2-flop chain for (st_data -> st_idle) transition
   signal clko_meta : std_logic;
   signal clko_sync : std_logic;
 
