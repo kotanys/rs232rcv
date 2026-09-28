@@ -8,8 +8,8 @@ entity rs232_tester is
   generic (
     n          : natural := 8;
     end_bits   : natural := 2;
-    clk_period : time := 20 ns;
-    bit_time   : time := 26.04 us
+    clk_period : time := 20 ns; -- 50 MHz -> 2 MHz by PLL
+    bit_time   : time := 8.68 us -- 115200 baud
   );
   port (
     -- from DUT

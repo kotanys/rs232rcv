@@ -6,10 +6,7 @@ end entity rs232_receiver_tb;
 
 architecture behavioral of rs232_receiver_tb is
 
-  constant n          : natural := 8;
-  constant end_bits   : natural := 2;
-  constant clk_period : time    := 20 ns;  -- 50 MHz -> 2 Mhz by PLL
-  constant bit_time   : time    := 26.04 us; -- 38400 baud
+  constant n: natural := 8;
 
   signal clk     : std_logic;
   signal rst_n   : std_logic;
@@ -22,12 +19,6 @@ architecture behavioral of rs232_receiver_tb is
 begin
 
   u_tester : entity work.rs232_tester(sim)
-    --generic map (
-    --  n          => n,
-    --  end_bits   => end_bits,
-    --  clk_period => clk_period,
-    --  bit_time   => bit_time
-    --)
     port map (
       clk_o  => clk,
       rst_no => rst_n,
@@ -39,11 +30,6 @@ begin
     );
 
   u_dut : entity work.rs232_receiver
-    --generic map (
-    --  n            => n,
-    --  end_bits     => end_bits,
-    --  counter_size => 8
-    --)
     port map (
       clki_i     => clk,
       rst_ni     => rst_n,
