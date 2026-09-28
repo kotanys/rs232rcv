@@ -6,29 +6,30 @@ library ieee;
 
 entity rs232_tester is
   generic (
-    n          : natural;
-    end_bits   : natural;
-    clk_period : time;
-    bit_time   : time
+    n          : natural := 8;
+    end_bits   : natural := 2;
+    clk_period : time := 20 ns;
+    bit_time   : time := 26.04 us
   );
   port (
-    -- to DUT
-    clk_o  : out   std_logic;
-    rst_no : out   std_logic;
-    data_o : out   std_logic;
     -- from DUT
-    data_i : in    std_logic_vector(n - 1 downto 0);
-    err_i  : in    std_logic;
-    done_i : in    std_logic
+    data_i : in  std_logic_vector(n - 1 downto 0);
+    err_i  : in  std_logic;
+    done_i : in  std_logic;
+    clk0_i : in  std_logic;
+    -- to DUT
+    clk_o  : out std_logic;
+    rst_no : out std_logic;
+    data_o : out std_logic
   );
 end entity rs232_tester;
 
 architecture sim of rs232_tester is
 
   constant wait_time : time := 0 ns;
-  constant data_len : natural := 50;
+  constant data_len : natural := 25;
   constant data_string : std_logic_vector(data_len*8 - 1 downto 0) :=
-    x"2D01C9A459016F07B5E12BC103D2A62486460D91E2B890EEB638244B5BC254C7EF56F227ADC4FE8526569A88BFE8E0D22D0A";
+    x"2D01C9A459016F07B5E12BC103D2A62486460D91E2B890EEB6";
 
   signal clk   : std_logic := '0';
   signal rst_n : std_logic := '0';
@@ -98,7 +99,7 @@ begin
   begin
     rst_n <= '0';
     data  <= '1';
-    wait for 1 ms;
+    wait for 50 us;
     rst_n <= '1';
     wait for 1 us;
 
@@ -117,8 +118,14 @@ begin
 
       end loop;
 
-      wait for 1 ms;
+      wait for 100 us;
     end loop;
+
+    -- for j in 0 to 10 loop
+      -- send_frame(data, x"AA", bit_time);
+      -- data <= '1';
+      -- wait for wait_time;
+    -- end loop;
 
     report "Tester: finished."
       severity note;
@@ -126,10 +133,10 @@ begin
 
   end process send;
 
-  monitor : process (done_i) is
+  monitor : process (clk0_i) is
   begin
 
-    if rising_edge(done_i) then
+    if (rising_edge(clk0_i) and done_i = '1')  then
       report "Tester: done, data=0x" & to_hstring(data_i) &
              " err=" & std_logic'image(err_i)
         severity note;

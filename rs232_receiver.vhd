@@ -13,15 +13,21 @@ entity rs232_receiver is
     data_i     : in  std_logic;
     data_out_o : out std_logic_vector(n - 1 downto 0);
     err_o      : out std_logic;
-    clko_o     : out std_logic
+    out_en_o   : out std_logic;
+    clk0_o     : out std_logic;
+    clk90_o    : out std_logic
   );
 end entity rs232_receiver;
 
 architecture behavioral of rs232_receiver is
 
-  signal internal_clk : std_logic;
-  signal sr_rst_n     : std_logic;
-  signal pkt_done     : std_logic;
+  signal sr_en      : std_logic;
+  signal rst_n      : std_logic;
+  signal pll_rst    : std_logic;
+  signal pkt_done   : std_logic;
+  signal clk0       : std_logic;
+  signal clk90      : std_logic;
+  signal pll_locked : std_logic;
 
 begin
 
@@ -30,12 +36,12 @@ begin
       counter_size => counter_size
     )
     port map (
-      data_i         => data_i,
-      rst_ni         => rst_ni,
-      clki_i         => clki_i,
-      clko_i         => pkt_done,
-      internal_clk_o => internal_clk,
-      sr_rst_no      => sr_rst_n
+      clki_i   => clk0,
+      rst_ni   => rst_n,
+      data_i   => data_i,
+
+      out_en_i => pkt_done,
+      sr_en_o  => sr_en
     );
 
   u_reader : entity work.rs232_reader(rtl)
@@ -44,14 +50,29 @@ begin
       end_bits => end_bits
     )
     port map (
-      data_in_i      => data_i,
-      internal_clk_i => internal_clk,
-      rst_ni         => sr_rst_n,
-      data_out_o     => data_out_o,
-      clko_o         => pkt_done,
-      err_o          => err_o
+      clki_i     => clk90,
+      rst_ni     => rst_n,
+      data_in_i  => data_i,
+
+      sr_en_i    => sr_en,
+      data_out_o => data_out_o,
+      out_en_o   => pkt_done,
+      err_o      => err_o
     );
 
-  clko_o <= pkt_done;
+  u_pll : entity work.rs232_pll(syn)
+    port map (
+      areset => pll_rst,
+      inclk0 => clki_i,
+      c0     => clk0,
+      c1     => clk90,
+      locked => pll_locked
+    );
+
+  rst_n    <= rst_ni and pll_locked;
+  pll_rst  <= not rst_ni;
+  out_en_o <= pkt_done;
+  clk0_o   <= clk0;
+  clk90_o  <= clk90;
 
 end architecture behavioral;

@@ -45,3 +45,5 @@ c5_pin_model_dump.txt
 *.rpt
 
 *.qws
+/greybox_tmp
+RS232_Receiver.fit.smsg

@@ -8,12 +8,11 @@ entity rs232_clock is
     counter_size : natural := 8
   );
   port (
-    data_i         : in    std_logic;
-    rst_ni         : in    std_logic;
-    clki_i         : in    std_logic;
-    clko_i         : in    std_logic;
-    internal_clk_o : out   std_logic;
-    sr_rst_no      : out   std_logic
+    data_i   : in    std_logic;
+    rst_ni   : in    std_logic;
+    clki_i   : in    std_logic;
+    out_en_i : in    std_logic;
+    sr_en_o  : out   std_logic
   );
 end entity rs232_clock;
 
@@ -31,24 +30,18 @@ architecture rtl of rs232_clock is
   signal down_count : std_logic_vector(counter_size - 2 downto 0);
   signal divider2   : std_logic;
 
-  -- 2-flop chain for (st_data -> st_idle) transition
-  signal clko_meta : std_logic;
-  signal clko_sync : std_logic;
-
 begin
 
   assert counter_size >= 2
     report "counter_size must be >= 2"
     severity failure;
 
-  internal_clk_o <= divider2;
-
   clock : process (clki_i, rst_ni) is
   begin
 
     if (rst_ni = '0') then
       state <= st_c_wait;
-    elsif (clki_i'event and clki_i = '1') then
+    elsif rising_edge(clki_i) then
 
       case state is
 
@@ -72,7 +65,7 @@ begin
 
         when st_data =>
 
-          if (clko_sync = '1') then
+          if (out_en_i = '1') then
             state <= st_idle;
           end if;
 
@@ -86,16 +79,11 @@ begin
   begin
 
     if (rst_ni = '0') then
-      sr_rst_no  <= '0';
+      sr_en_o    <= '0';
       up_count   <= (others => '0');
       down_count <= (others => '0');
-      divider2   <= '0';
-      clko_meta  <= '0';
-      clko_sync  <= '0';
-    elsif (clki_i'event and clki_i = '1') then
-      clko_meta <= clko_i;
-      clko_sync <= clko_meta;
-
+      divider2   <= '1';
+    elsif rising_edge(clki_i) then
       if (state = st_c_wait) then
         up_count <= (others => '0');
       elsif (state = st_c_start) then
@@ -121,13 +109,13 @@ begin
           divider2 <= not divider2;
         end if;
       else
-        divider2 <= '0';
+        divider2 <= '1';
       end if;
 
-      if (state = st_data) then
-        sr_rst_no <= '1';
+      if (state = st_data and divider2 = '1' and down_count = 1) then
+        sr_en_o <= '1';
       else
-        sr_rst_no <= '0';
+        sr_en_o <= '0';
       end if;
     end if;
 
