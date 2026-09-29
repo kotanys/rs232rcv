@@ -20,13 +20,11 @@ end entity top;
 
 architecture behavioral of top is
 
-  signal sr_en      : std_logic;
   signal rst_n      : std_logic;
   signal pll_rst    : std_logic;
   signal pkt_done   : std_logic;
   signal clk0       : std_logic;
   signal pll_locked : std_logic;
-  signal data_sync  : std_logic;
 
 begin
 
