@@ -16,7 +16,7 @@ entity top is
     out_en_o   : out std_logic;
     clk0_o     : out std_logic
   );
-end entity rs232_receiver;
+end entity top;
 
 architecture behavioral of top is
 
@@ -39,7 +39,7 @@ begin
     port map (
       clki_i     => clk0,
       rst_ni     => rst_n,
-      data_in_i  => data_i,
+      data_i     => data_i,
       data_out_o => data_out_o,
       out_en_o   => pkt_done,
       err_o      => err_o
