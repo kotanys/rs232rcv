@@ -3,9 +3,10 @@ library ieee;
 
 entity rs232_receiver is
   generic (
-    n            : natural := 8;
-    end_bits     : natural := 2;
-    counter_size : natural := 8
+    n              : natural := 8;
+    end_bits       : natural := 1;
+    counter_size   : natural := 14;
+    M_timeout_log2 : natural := 4
   );
   port (
     clki_i     : in  std_logic;
@@ -30,7 +31,8 @@ begin
 
   u_clock : entity work.rs232_clock(rtl)
     generic map (
-      counter_size => counter_size
+      counter_size   => counter_size,
+      M_timeout_log2 => M_timeout_log2
     )
     port map (
       clki_i      => clki_i,

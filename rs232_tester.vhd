@@ -7,10 +7,11 @@ library ieee;
 entity rs232_tester is
   generic (
     n          : natural := 8;
-    end_bits   : natural := 2;
-    clk_period : time := 500 ns; -- 2 MHz
-    bit_time   : time := 26.04 us -- 38400 baud
-    -- bit_time   : time := 8.68 us -- 115200 baud
+    end_bits   : natural := 1;
+    clk_period : time := 200 ns; -- 5 MHz
+    -- clk_period : time := 500 ns; -- 2 MHz
+    -- bit_time   : time := 26.04 us -- 38400 baud
+    bit_time   : time := 8.68 us -- 115200 baud
   );
   port (
     -- from DUT
@@ -141,7 +142,10 @@ begin
 
       if (data_read_cnt = data_len - 1) then
         assert data_string = (data_rcv(data_rcv'high - data_i'length downto 0) & data_i)
-          report "Txmit FAILED"
+          report "Txmit FAILED: data differ"
+          severity failure;
+        assert err_i = '0'
+          report "Txmit FAILED: error bit set"
           severity failure;
         data_read_cnt <= 0;
       else

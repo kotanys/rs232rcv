@@ -5,7 +5,8 @@ library ieee;
 
 entity rs232_clock is
   generic (
-    counter_size : natural := 8
+    counter_size : natural;
+    M_timeout_log2 : natural
   );
   port (
     data_i      : in  std_logic;
@@ -26,12 +27,13 @@ architecture rtl of rs232_clock is
     st_data     -- Receiving data packet
   );
 
-  signal state      : clock_fsm;
-  signal up_count   : std_logic_vector(counter_size - 1 downto 0);
-  signal down_count : std_logic_vector(counter_size - 2 downto 0);
-  signal divider2   : std_logic;
-  signal data_meta  : std_logic;
-  signal data_sync  : std_logic;
+  signal state             : clock_fsm;
+  signal up_count          : std_logic_vector(counter_size - 1 downto 0);
+  signal down_count        : std_logic_vector(counter_size - 2 downto 0);
+  -- signal calibration_count : std_logic_vector(counter_size - 1 + M_timeout_log2 downto 0);
+  signal divider2          : std_logic;
+  signal data_meta         : std_logic;
+  signal data_sync         : std_logic;
 
 begin
 
@@ -68,6 +70,8 @@ begin
 
         when st_data =>
 
+          -- if (calibration_count = 1) then
+            -- state <= st_c_wait;
           if (out_en_i = '1') then
             state <= st_idle;
           end if;
@@ -84,12 +88,13 @@ begin
   begin
 
     if (rst_ni = '0') then
-      sr_en_o    <= '0';
-      up_count   <= (others => '0');
-      down_count <= (others => '0');
-      divider2   <= '1';
-      data_meta  <= '1';
-      data_sync  <= '1';
+      sr_en_o           <= '0';
+      up_count          <= (others => '0');
+      down_count        <= (others => '0');
+      -- calibration_count <= (others => '0');
+      divider2          <= '1';
+      data_meta         <= '1';
+      data_sync         <= '1';
     elsif rising_edge(clki_i) then
       data_meta <= data_i;
       data_sync <= data_meta;
@@ -98,6 +103,9 @@ begin
         up_count <= (others => '0');
       elsif (state = st_c_start) then
         up_count <= up_count + 1;
+        if (up_count = (up_count'range => '1')) then
+          report "Overflow!!" severity failure;
+        end if;
       end if;
 
       if (state = st_c_wait) then
@@ -113,6 +121,14 @@ begin
           down_count <= down_count - 1;
         end if;
       end if;
+
+      -- if (state = st_c_wait) then
+        -- calibration_count <= (others => '0');
+      -- elsif (state = st_c_start or state = st_data) then
+        -- calibration_count <= up_count & (M_timeout_log2 - 1 downto 0 => '0');
+      -- elsif (state = st_idle) then
+        -- calibration_count <= calibration_count - 1;
+      -- end if;
 
       if (state = st_data) then
         if (down_count = 1) then

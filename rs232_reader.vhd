@@ -3,8 +3,8 @@ library ieee;
 
 entity rs232_reader is
   generic (
-    n        : natural := 8;
-    end_bits : natural := 2
+    n        : natural;
+    end_bits : natural
   );
   port (
     data_in_i  : in    std_logic;

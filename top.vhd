@@ -3,9 +3,10 @@ library ieee;
 
 entity top is
   generic (
-    n            : natural := 8;
-    end_bits     : natural := 2;
-    counter_size : natural := 8
+    n              : natural := 8;
+    end_bits       : natural := 2;
+    counter_size   : natural := 14;
+    M_timeout_log2 : natural := 4
   );
   port (
     clki_i     : in  std_logic;
@@ -30,9 +31,10 @@ begin
 
   u_rcv : entity work.rs232_receiver(behavioral)
     generic map (
-      n            => n,
-      end_bits     => end_bits,
-      counter_size => counter_size
+      n              => n,
+      end_bits       => end_bits,
+      counter_size   => counter_size,
+      M_timeout_log2 => M_timeout_log2
     )
     port map (
       clki_i     => clk0,
