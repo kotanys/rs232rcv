@@ -32,7 +32,7 @@ begin
       data_out_o <= (others => '0');
       out_en_o   <= '0';
       err_o      <= '1';
-    elsif falling_edge(clki_i) then
+    elsif rising_edge(clki_i) then
       out_en_o <= '0';
 
       if (sr_en_i = '1') then
