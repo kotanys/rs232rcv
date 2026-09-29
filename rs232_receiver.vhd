@@ -28,6 +28,7 @@ architecture behavioral of rs232_receiver is
   signal clk0       : std_logic;
   signal clk90      : std_logic;
   signal pll_locked : std_logic;
+  signal data_sync  : std_logic;
 
 begin
 
@@ -36,12 +37,13 @@ begin
       counter_size => counter_size
     )
     port map (
-      clki_i   => clk0,
-      rst_ni   => rst_n,
-      data_i   => data_i,
+      clki_i      => clk0,
+      rst_ni      => rst_n,
+      data_i      => data_i,
 
-      out_en_i => pkt_done,
-      sr_en_o  => sr_en
+      out_en_i    => pkt_done,
+      sr_en_o     => sr_en,
+      data_sync_o => data_sync
     );
 
   u_reader : entity work.rs232_reader(rtl)
@@ -52,7 +54,7 @@ begin
     port map (
       clki_i     => clk90,
       rst_ni     => rst_n,
-      data_in_i  => data_i,
+      data_in_i  => data_sync,
 
       sr_en_i    => sr_en,
       data_out_o => data_out_o,

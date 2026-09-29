@@ -8,11 +8,12 @@ entity rs232_clock is
     counter_size : natural := 8
   );
   port (
-    data_i   : in    std_logic;
-    rst_ni   : in    std_logic;
-    clki_i   : in    std_logic;
-    out_en_i : in    std_logic;
-    sr_en_o  : out   std_logic
+    data_i      : in  std_logic;
+    rst_ni      : in  std_logic;
+    clki_i      : in  std_logic;
+    out_en_i    : in  std_logic;
+    sr_en_o     : out std_logic;
+    data_sync_o : out std_logic
   );
 end entity rs232_clock;
 
@@ -29,6 +30,8 @@ architecture rtl of rs232_clock is
   signal up_count   : std_logic_vector(counter_size - 1 downto 0);
   signal down_count : std_logic_vector(counter_size - 2 downto 0);
   signal divider2   : std_logic;
+  signal data_meta  : std_logic;
+  signal data_sync  : std_logic;
 
 begin
 
@@ -47,19 +50,19 @@ begin
 
         when st_c_wait =>
 
-          if (data_i = '0') then
+          if (data_sync = '0') then
             state <= st_c_start;
           end if;
 
         when st_c_start =>
 
-          if (data_i = '1') then
+          if (data_sync = '1') then
             state <= st_idle;
           end if;
 
         when st_idle =>
 
-          if (data_i = '0') then
+          if (data_sync = '0') then
             state <= st_data;
           end if;
 
@@ -75,6 +78,8 @@ begin
 
   end process clock;
 
+  data_sync_o <= data_sync;
+
   signals : process (clki_i, rst_ni) is
   begin
 
@@ -83,7 +88,12 @@ begin
       up_count   <= (others => '0');
       down_count <= (others => '0');
       divider2   <= '1';
+      data_meta  <= '1';
+      data_sync  <= '1';
     elsif rising_edge(clki_i) then
+      data_meta <= data_i;
+      data_sync <= data_meta;
+
       if (state = st_c_wait) then
         up_count <= (others => '0');
       elsif (state = st_c_start) then
@@ -92,7 +102,7 @@ begin
 
       if (state = st_c_wait) then
         down_count <= (others => '0');
-      elsif (state = st_c_start and data_i = '1') then
+      elsif (state = st_c_start and data_sync = '1') then
         down_count <= up_count(counter_size - 1 downto 1);
       elsif (state = st_idle) then
         down_count <= up_count(counter_size - 1 downto 1);
