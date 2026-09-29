@@ -8,7 +8,7 @@ entity rs232_tester is
   generic (
     n          : natural := 8;
     end_bits   : natural := 2;
-    clk_period : time := 20 ns; -- 50 MHz -> 2 MHz by PLL
+    clk_period : time := 500 ns; -- 2 MHz
     bit_time   : time := 26.04 us -- 38400 baud
     -- bit_time   : time := 8.68 us -- 115200 baud
   );
@@ -17,7 +17,6 @@ entity rs232_tester is
     data_i : in  std_logic_vector(n - 1 downto 0);
     err_i  : in  std_logic;
     done_i : in  std_logic;
-    clk0_i : in  std_logic;
     -- to DUT
     clk_o  : out std_logic;
     rst_no : out std_logic;
@@ -134,10 +133,10 @@ begin
 
   end process send;
 
-  monitor : process (clk0_i) is
+  monitor : process (clk) is
   begin
 
-    if (rising_edge(clk0_i) and done_i = '1')  then
+    if (rising_edge(clk) and done_i = '1')  then
       report "Tester: done, data=0x" & to_hstring(data_i) &
              " err=" & std_logic'image(err_i)
         severity note;

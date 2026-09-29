@@ -14,7 +14,6 @@ architecture behavioral of rs232_receiver_tb is
   signal data    : std_logic_vector(n - 1 downto 0);
   signal err     : std_logic;
   signal done    : std_logic;
-  signal clk0    : std_logic;
 
 begin
 
@@ -25,8 +24,7 @@ begin
       data_o => data_in,
       data_i => data,
       err_i  => err,
-      done_i => done,
-      clk0_i => clk0
+      done_i => done
     );
 
   u_dut : entity work.rs232_receiver
@@ -36,8 +34,7 @@ begin
       data_i     => data_in,
       data_out_o => data,
       err_o      => err,
-      out_en_o   => done,
-      clk0_o     => clk0
+      out_en_o   => done
     );
 
 end architecture behavioral;
