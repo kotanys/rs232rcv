@@ -31,6 +31,9 @@ architecture sim of rs232_tester is
   constant data_string : std_logic_vector(data_len*8 - 1 downto 0) :=
     x"2D01C9A459016F07B5E12BC103D2A62486460D91E2B890EEB6";
 
+  signal data_rcv : std_logic_vector(data_len*8 - 1 downto 0) := (others => '0');
+  signal data_read_cnt : natural := 0;
+
   signal clk   : std_logic := '0';
   signal rst_n : std_logic := '0';
   signal data  : std_logic := '1';
@@ -121,12 +124,6 @@ begin
       wait for 100 us;
     end loop;
 
-    -- for j in 0 to 10 loop
-      -- send_frame(data, x"AA", bit_time);
-      -- data <= '1';
-      -- wait for wait_time;
-    -- end loop;
-
     report "Tester: finished."
       severity note;
     wait;
@@ -137,9 +134,20 @@ begin
   begin
 
     if (rising_edge(clk) and done_i = '1')  then
-      report "Tester: done, data=0x" & to_hstring(data_i) &
-             " err=" & std_logic'image(err_i)
+      report "Recieved data=0x" & to_hstring(data_i) & " err=" & std_logic'image(err_i)
         severity note;
+
+      data_rcv <= data_rcv(data_rcv'high - data_i'length downto 0) & data_i;
+
+      if (data_read_cnt = data_len - 1) then
+        assert data_string = (data_rcv(data_rcv'high - data_i'length downto 0) & data_i)
+          report "Txmit FAILED"
+          severity failure;
+        data_read_cnt <= 0;
+      else
+        data_read_cnt <= data_read_cnt + 1;
+      end if;
+
     end if;
 
   end process monitor;

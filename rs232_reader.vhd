@@ -41,7 +41,7 @@ begin
 
       if (read_sr(read_sr'high) = '0') then
         data_out_o <= read_sr(read_sr'high - 1 downto end_bits);
-        if (read_sr(end_bits - 1 downto 0) = "11") then
+        if (read_sr(end_bits - 1 downto 0) = (end_bits - 1 downto 0 => '1')) then
           err_o <= '0';
         else
           err_o <= '1';
