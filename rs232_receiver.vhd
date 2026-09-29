@@ -15,7 +15,7 @@ entity rs232_receiver is
     err_o      : out std_logic;
     out_en_o   : out std_logic;
     clk0_o     : out std_logic;
-    clk90_o    : out std_logic
+    clk180_o    : out std_logic
   );
 end entity rs232_receiver;
 
@@ -26,7 +26,7 @@ architecture behavioral of rs232_receiver is
   signal pll_rst    : std_logic;
   signal pkt_done   : std_logic;
   signal clk0       : std_logic;
-  signal clk90      : std_logic;
+  signal clk180      : std_logic;
   signal pll_locked : std_logic;
   signal data_sync  : std_logic;
 
@@ -52,7 +52,7 @@ begin
       end_bits => end_bits
     )
     port map (
-      clki_i     => clk90,
+      clki_i     => clk180,
       rst_ni     => rst_n,
       data_in_i  => data_sync,
 
@@ -67,7 +67,7 @@ begin
       areset => pll_rst,
       inclk0 => clki_i,
       c0     => clk0,
-      c1     => clk90,
+      c1     => clk180,
       locked => pll_locked
     );
 
@@ -75,6 +75,6 @@ begin
   pll_rst  <= not rst_ni;
   out_en_o <= pkt_done;
   clk0_o   <= clk0;
-  clk90_o  <= clk90;
+  clk180_o  <= clk180;
 
 end architecture behavioral;

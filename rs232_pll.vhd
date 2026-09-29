@@ -156,7 +156,7 @@ BEGIN
 		clk1_divide_by => 25,
 		clk1_duty_cycle => 50,
 		clk1_multiply_by => 1,
-		clk1_phase_shift => "125000",
+		clk1_phase_shift => "250000",
 		compensate_clock => "CLK0",
 		inclk0_input_frequency => 20000,
 		intended_device_family => "Cyclone 10 LP",
@@ -280,7 +280,7 @@ END SYN;
 -- Retrieval info: PRIVATE: PHASE_RECONFIG_FEATURE_ENABLED STRING "1"
 -- Retrieval info: PRIVATE: PHASE_RECONFIG_INPUTS_CHECK STRING "0"
 -- Retrieval info: PRIVATE: PHASE_SHIFT0 STRING "0.00000000"
--- Retrieval info: PRIVATE: PHASE_SHIFT1 STRING "90.00000000"
+-- Retrieval info: PRIVATE: PHASE_SHIFT1 STRING "180.00000000"
 -- Retrieval info: PRIVATE: PHASE_SHIFT_STEP_ENABLED_CHECK STRING "0"
 -- Retrieval info: PRIVATE: PHASE_SHIFT_UNIT0 STRING "deg"
 -- Retrieval info: PRIVATE: PHASE_SHIFT_UNIT1 STRING "deg"
@@ -325,7 +325,7 @@ END SYN;
 -- Retrieval info: CONSTANT: CLK1_DIVIDE_BY NUMERIC "25"
 -- Retrieval info: CONSTANT: CLK1_DUTY_CYCLE NUMERIC "50"
 -- Retrieval info: CONSTANT: CLK1_MULTIPLY_BY NUMERIC "1"
--- Retrieval info: CONSTANT: CLK1_PHASE_SHIFT STRING "125000"
+-- Retrieval info: CONSTANT: CLK1_PHASE_SHIFT STRING "250000"
 -- Retrieval info: CONSTANT: COMPENSATE_CLOCK STRING "CLK0"
 -- Retrieval info: CONSTANT: INCLK0_INPUT_FREQUENCY NUMERIC "20000"
 -- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone 10 LP"
