@@ -30,7 +30,6 @@ architecture rtl of rs232_clock is
   signal state             : clock_fsm;
   signal up_count          : std_logic_vector(counter_size - 1 downto 0);
   signal down_count        : std_logic_vector(counter_size - 2 downto 0);
-  -- signal calibration_count : std_logic_vector(counter_size - 1 + M_timeout_log2 downto 0);
   signal divider2          : std_logic;
   signal data_meta         : std_logic;
   signal data_sync         : std_logic;
@@ -70,8 +69,6 @@ begin
 
         when st_data =>
 
-          -- if (calibration_count = 1) then
-            -- state <= st_c_wait;
           if (out_en_i = '1') then
             state <= st_idle;
           end if;
@@ -91,7 +88,6 @@ begin
       sr_en_o           <= '0';
       up_count          <= (others => '0');
       down_count        <= (others => '0');
-      -- calibration_count <= (others => '0');
       divider2          <= '1';
       data_meta         <= '1';
       data_sync         <= '1';
@@ -121,14 +117,6 @@ begin
           down_count <= down_count - 1;
         end if;
       end if;
-
-      -- if (state = st_c_wait) then
-        -- calibration_count <= (others => '0');
-      -- elsif (state = st_c_start or state = st_data) then
-        -- calibration_count <= up_count & (M_timeout_log2 - 1 downto 0 => '0');
-      -- elsif (state = st_idle) then
-        -- calibration_count <= calibration_count - 1;
-      -- end if;
 
       if (state = st_data) then
         if (down_count = 1) then
