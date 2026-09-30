@@ -109,8 +109,11 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_instance_assignment -name PCI_IO ON -to clki_i
 set_instance_assignment -name PCI_IO ON -to data_i
 set_instance_assignment -name PCI_IO ON -to rst_ni
+set_global_assignment -name EDA_TEST_BENCH_FILE rs232_tester.vhd -section_id rs232_receiver_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE rs232_receiver_tb.vhd -section_id rs232_receiver_tb
 set_global_assignment -name SOURCE_FILE rs232_pll.cmp
 set_global_assignment -name QIP_FILE rs232_pll.qip
+set_global_assignment -name VHDL_FILE segled.vhd
 set_global_assignment -name VHDL_FILE rs232_clock.vhd
 set_global_assignment -name VHDL_FILE rs232_reader.vhd
 set_global_assignment -name VHDL_FILE rs232_receiver.vhd
@@ -118,6 +121,14 @@ set_global_assignment -name VHDL_FILE rs232_tester.vhd
 set_global_assignment -name VHDL_FILE rs232_receiver_tb.vhd
 set_global_assignment -name VHDL_FILE top.vhd
 set_global_assignment -name SDC_FILE top.sdc
-set_global_assignment -name EDA_TEST_BENCH_FILE rs232_tester.vhd -section_id rs232_receiver_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE rs232_receiver_tb.vhd -section_id rs232_receiver_tb
+set_location_assignment PIN_V16 -to selected_cnt_o[1]
+set_location_assignment PIN_U11 -to selected_cnt_o[0]
+set_location_assignment PIN_W14 -to led_out_o[0]
+set_location_assignment PIN_AB19 -to led_out_o[1]
+set_location_assignment PIN_AB18 -to led_out_o[2]
+set_location_assignment PIN_V13 -to led_out_o[3]
+set_location_assignment PIN_U12 -to led_out_o[4]
+set_location_assignment PIN_V15 -to led_out_o[5]
+set_location_assignment PIN_AA19 -to led_out_o[6]
+
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
