@@ -129,7 +129,7 @@ begin
 
     -- send_frame(data, b"10101010", bit_time);
 
-    for j in 0 to 3 loop
+    for j in 0 to 0 loop
       for i in 0 to data_len - 1 loop
         sent := data_string(data_len*8 - 1 - i*8 downto data_len*8 - 8 - i*8);
         send_frame(data, sent, bit_time);

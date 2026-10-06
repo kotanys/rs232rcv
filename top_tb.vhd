@@ -39,10 +39,6 @@ begin
     );
 
   u_dut : entity work.top
-    -- generic map (
-      -- n        => n,
-      -- end_bits => end_bits
-    -- )
     port map (
       clki_i         => clki,
       rst_ni         => rst_n,
