@@ -99,23 +99,21 @@ begin
         up_count <= (others => '0');
       elsif (state = st_c_start) then
         up_count <= up_count + 1;
-        if (up_count = (up_count'range => '1')) then
-          report "Overflow!!" severity failure;
-        end if;
+        assert up_count /= (up_count'range => '1')
+          report "Overflow!!"
+          severity failure;
       end if;
 
       if (state = st_c_wait) then
         down_count <= (others => '0');
-      elsif (state = st_c_start and data_sync = '1') then
-        down_count <= up_count(counter_size - 1 downto 1);
-      elsif (state = st_idle) then
+      elsif (
+        (state = st_c_start and data_sync = '1')
+          or (state = st_idle)
+          or (state = st_data and down_count = 1)
+      ) then
         down_count <= up_count(counter_size - 1 downto 1);
       elsif (state = st_data) then
-        if (down_count = 1) then
-          down_count <= up_count(counter_size - 1 downto 1);
-        else
-          down_count <= down_count - 1;
-        end if;
+        down_count <= down_count - 1;
       end if;
 
       if (state = st_data) then

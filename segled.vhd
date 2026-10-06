@@ -53,7 +53,7 @@ begin
     if (rst_ni = '0') then
       i := 0;
       cnt <= (others => '1');
-      selected_cnt_o <= "10";
+      selected_cnt_o <= "01";
       if (active_low) then
         led_o <= (others => '1');
       else
@@ -65,11 +65,11 @@ begin
       if (cnt = (cnt'range => '1')) then
         if (i = 0) then
           i := 1;
-          selected_cnt_o <= "01";
+          selected_cnt_o <= "10";
           digit := decode(data_i(7 downto 4));
         else
           i := 0;
-          selected_cnt_o <= "10";
+          selected_cnt_o <= "01";
           digit := decode(data_i(3 downto 0));
         end if;
 

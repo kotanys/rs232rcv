@@ -6,20 +6,22 @@ library ieee;
 
 entity rs232_tester is
   generic (
-    n          : natural := 8;
-    end_bits   : natural := 1;
-    clk_period : time := 200 ns; -- 5 MHz
-    -- clk_period : time := 500 ns; -- 2 MHz
-    -- bit_time   : time := 26.04 us -- 38400 baud
-    bit_time   : time := 8.68 us -- 115200 baud
+    n           : natural := 8;
+    end_bits    : natural := 2; -- stop bits sent, must match top's generic
+    clki_period : time := 20 ns; -- 50 MHz board clock
+    -- clki_period : time := 40 ns; -- 25 MHz board clock
+    bit_time    : time := 8.68 us -- 115200 baud
   );
   port (
     -- from DUT
+    clk_i  : in  std_logic; -- top clk0_o
     data_i : in  std_logic_vector(n - 1 downto 0);
     err_i  : in  std_logic;
     done_i : in  std_logic;
+    led_i  : in  std_logic_vector(6 downto 0);
+    sel_i  : in  std_logic_vector(1 downto 0);
     -- to DUT
-    clk_o  : out std_logic;
+    clki_o : out std_logic;
     rst_no : out std_logic;
     data_o : out std_logic
   );
@@ -35,7 +37,7 @@ architecture sim of rs232_tester is
   signal data_rcv : std_logic_vector(data_len*8 - 1 downto 0) := (others => '0');
   signal data_read_cnt : natural := 0;
 
-  signal clk   : std_logic := '0';
+  signal clki  : std_logic := '0';
   signal rst_n : std_logic := '0';
   signal data  : std_logic := '1';
 
@@ -51,6 +53,19 @@ architecture sim of rs232_tester is
     return L.all;
 
   end function to_hstring;
+
+  function img (
+    slv : std_logic_vector
+  ) return string is
+
+    variable l : line;
+
+  begin
+
+    write(l, slv);
+    return L.all;
+
+  end function img;
 
   procedure send_bit (
     signal   l : out std_logic;
@@ -76,7 +91,7 @@ architecture sim of rs232_tester is
 
     send_bit(l, '0', t); -- start bit
 
-    for i in n - 1 downto 0 loop -- data, LSB first
+    for i in n - 1 downto 0 loop -- data, MSB first
 
       send_bit(l, data(i), t);
 
@@ -92,9 +107,9 @@ architecture sim of rs232_tester is
 
 begin
 
-  clk <= not clk after clk_period / 2;
+  clki <= not clki after clki_period / 2;
 
-  clk_o  <= clk;
+  clki_o <= clki;
   rst_no <= rst_n;
   data_o <= data;
 
@@ -105,21 +120,20 @@ begin
     data  <= '1';
     wait for 50 us;
     rst_n <= '1';
+
     wait for 1 us;
 
     -- Calibration packet
     send_frame(data, x"FF", bit_time);
-    data <= '1';
     wait for wait_time;
+
+    -- send_frame(data, b"10101010", bit_time);
 
     for j in 0 to 3 loop
       for i in 0 to data_len - 1 loop
         sent := data_string(data_len*8 - 1 - i*8 downto data_len*8 - 8 - i*8);
-
         send_frame(data, sent, bit_time);
-        data <= '1';
         wait for wait_time;
-
       end loop;
 
       wait for 100 us;
@@ -131,10 +145,10 @@ begin
 
   end process send;
 
-  monitor : process (clk) is
+  monitor : process (clk_i) is
   begin
 
-    if (rising_edge(clk) and done_i = '1')  then
+    if (rising_edge(clk_i) and done_i = '1')  then
       report "Recieved data=0x" & to_hstring(data_i) & " err=" & std_logic'image(err_i)
         severity note;
 

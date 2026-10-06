@@ -20,7 +20,6 @@ end entity rs232_reader;
 architecture rtl of rs232_reader is
 
   signal read_sr   : std_logic_vector(n + end_bits downto 0);
-  signal out_en_sr : std_logic_vector(1 downto 0);
 
 begin
 
