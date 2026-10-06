@@ -29,10 +29,9 @@ end entity tester;
 
 architecture sim of tester is
 
-  constant wait_time : time := 0 ns;
-  constant data_len : natural := 25;
+  constant data_len : natural := 3;
   constant data_string : std_logic_vector(data_len*8 - 1 downto 0) :=
-    x"2D01C9A459016F07B5E12BC103D2A62486460D91E2B890EEB6";
+    x"2D01C9"; -- A459016F07B5E12BC103D2A62486460D91E2B890EEB6";
 
   signal data_rcv : std_logic_vector(data_len*8 - 1 downto 0) := (others => '0');
   signal data_read_cnt : natural := 0;
@@ -123,20 +122,16 @@ begin
 
     wait for 1 us;
 
-    -- Calibration packet
-    send_frame(data, x"FF", bit_time);
-    wait for wait_time;
+    for j in 0 to 3 loop
+      -- Calibration packet
+      send_frame(data, x"FF", bit_time);
 
-    -- send_frame(data, b"10101010", bit_time);
-
-    for j in 0 to 0 loop
       for i in 0 to data_len - 1 loop
         sent := data_string(data_len*8 - 1 - i*8 downto data_len*8 - 8 - i*8);
         send_frame(data, sent, bit_time);
-        wait for wait_time;
       end loop;
 
-      wait for 100 us;
+      wait for 300 us;
     end loop;
 
     report "Tester: finished."

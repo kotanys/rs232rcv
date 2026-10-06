@@ -27,12 +27,13 @@ architecture rtl of rs232_clock is
     st_data     -- Receiving data packet
   );
 
-  signal state             : clock_fsm;
-  signal up_count          : std_logic_vector(counter_size - 1 downto 0);
-  signal down_count        : std_logic_vector(counter_size - 2 downto 0);
-  signal divider2          : std_logic;
-  signal data_meta         : std_logic;
-  signal data_sync         : std_logic;
+  signal state      : clock_fsm;
+  signal up_count   : std_logic_vector(counter_size - 1 downto 0);
+  signal down_count : std_logic_vector(counter_size - 2 downto 0);
+  signal cal_count  : std_logic_vector(counter_size - 1 + M_timeout_log2 downto 0);
+  signal divider2   : std_logic;
+  signal data_meta  : std_logic;
+  signal data_sync  : std_logic;
 
 begin
 
@@ -65,6 +66,8 @@ begin
 
           if (data_sync = '0') then
             state <= st_data;
+          elsif (cal_count = 0) then
+            state <= st_c_wait;
           end if;
 
         when st_data =>
@@ -85,12 +88,13 @@ begin
   begin
 
     if (rst_ni = '0') then
-      sr_en_o           <= '0';
-      up_count          <= (others => '0');
-      down_count        <= (others => '0');
-      divider2          <= '1';
-      data_meta         <= '1';
-      data_sync         <= '1';
+      sr_en_o    <= '0';
+      up_count   <= (others => '0');
+      down_count <= (others => '0');
+      cal_count  <= (others => '0');
+      divider2   <= '1';
+      data_meta  <= '1';
+      data_sync  <= '1';
     elsif rising_edge(clki_i) then
       data_meta <= data_i;
       data_sync <= data_meta;
@@ -114,6 +118,12 @@ begin
         down_count <= up_count(counter_size - 1 downto 1);
       elsif (state = st_data) then
         down_count <= down_count - 1;
+      end if;
+
+      if (state = st_idle) then
+        cal_count <= cal_count - 1;
+      else
+        cal_count <= up_count & (M_timeout_log2 downto 1 => '0');
       end if;
 
       if (state = st_data) then
