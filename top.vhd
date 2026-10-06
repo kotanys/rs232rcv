@@ -58,7 +58,6 @@ begin
 
   u_segled : entity work.segled(rtl)
     generic map (
-      n          => n,
       active_low => false
     )
     port map (
