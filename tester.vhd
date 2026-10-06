@@ -4,7 +4,7 @@ library ieee;
   use std.textio.all;
   use ieee.std_logic_textio.all;
 
-entity rs232_tester is
+entity tester is
   generic (
     n           : natural := 8;
     end_bits    : natural := 2; -- stop bits sent, must match top's generic
@@ -25,9 +25,9 @@ entity rs232_tester is
     rst_no : out std_logic;
     data_o : out std_logic
   );
-end entity rs232_tester;
+end entity tester;
 
-architecture sim of rs232_tester is
+architecture sim of tester is
 
   constant wait_time : time := 0 ns;
   constant data_len : natural := 25;

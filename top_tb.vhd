@@ -21,7 +21,7 @@ architecture behavioral of top_tb is
 
 begin
 
-  u_tester : entity work.rs232_tester(sim)
+  u_tester : entity work.tester(sim)
     generic map (
       n        => n,
       end_bits => end_bits

@@ -109,7 +109,7 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_instance_assignment -name PCI_IO ON -to clki_i
 set_instance_assignment -name PCI_IO ON -to data_i
 set_instance_assignment -name PCI_IO ON -to rst_ni
-set_global_assignment -name EDA_TEST_BENCH_FILE rs232_tester.vhd -section_id top_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE tester.vhd -section_id top_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE top_tb.vhd -section_id top_tb
 set_global_assignment -name SOURCE_FILE rs232_pll.cmp
 set_global_assignment -name QIP_FILE rs232_pll.qip
@@ -117,7 +117,7 @@ set_global_assignment -name VHDL_FILE segled.vhd
 set_global_assignment -name VHDL_FILE rs232_clock.vhd
 set_global_assignment -name VHDL_FILE rs232_reader.vhd
 set_global_assignment -name VHDL_FILE rs232_receiver.vhd
-set_global_assignment -name VHDL_FILE rs232_tester.vhd
+set_global_assignment -name VHDL_FILE tester.vhd
 set_global_assignment -name VHDL_FILE top_tb.vhd
 set_global_assignment -name VHDL_FILE top.vhd
 set_global_assignment -name SDC_FILE top.sdc
