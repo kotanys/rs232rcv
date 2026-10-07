@@ -49,22 +49,9 @@ architecture sim of tester is
   begin
 
     hwrite(l, slv);
-    return L.all;
+    return l.all;
 
   end function to_hstring;
-
-  function img (
-    slv : std_logic_vector
-  ) return string is
-
-    variable l : line;
-
-  begin
-
-    write(l, slv);
-    return L.all;
-
-  end function img;
 
   procedure send_bit (
     signal   l : out std_logic;
