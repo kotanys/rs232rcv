@@ -8,11 +8,11 @@ entity segled is
     active_low : boolean
   );
   port (
-    clki_i         : in    std_logic;
-    rst_ni         : in    std_logic;
-    data_i         : in    std_logic_vector(7 downto 0);
-    selected_cnt_o : out   std_logic_vector(1 downto 0);
-    led_o          : out   std_logic_vector(6 downto 0)
+    clki_i     : in    std_logic;
+    rst_ni     : in    std_logic;
+    data_i     : in    std_logic_vector(7 downto 0);
+    selected_o : out   std_logic_vector(2 downto 0);
+    led_o      : out   std_logic_vector(6 downto 0)
   );
 end entity segled;
 
@@ -38,50 +38,54 @@ architecture rtl of segled is
       when "1101" => return "0111101"; -- D
       when "1110" => return "1001111"; -- E
       when "1111" => return "1000111"; -- F
-      when others => return "0000001";
+      when others => return "0000000";
     end case;
   end function decode;
 
-  signal cnt : std_logic_vector(9 downto 0) := (others => '1');
+  signal digit : std_logic_vector(6 downto 0) := (others => '0');
+  signal cnt   : std_logic_vector(9 downto 0) := (others => '1');
 
 begin
 
   clock : process (rst_ni, clki_i) is
-    variable i     : natural range 0 to 1 := 0;
-    variable digit : std_logic_vector(6 downto 0);
+    variable i : natural range 0 to 2 := 2;
   begin
     if (rst_ni = '0') then
-      i := 0;
-      cnt <= (others => '1');
-      selected_cnt_o <= "01";
-      if (active_low) then
-        led_o <= (others => '1');
-      else
-        led_o <= (others => '0');
-      end if;
+      i := 2; -- 2 so that first update lands on i=0
+      cnt        <= (others => '1');
+      selected_o <= "001";
+      digit      <= (others => '0');
     elsif rising_edge(clki_i) then
       cnt <= cnt - 1;
 
-      if (cnt = (cnt'range => '1')) then
-        if (i = 0) then
-          i := 1;
-          selected_cnt_o <= "10";
-          digit := decode(data_i(7 downto 4));
-        else
-          i := 0;
-          selected_cnt_o <= "01";
-          digit := decode(data_i(3 downto 0));
-        end if;
+      if (cnt = 0) then
+        i := (i+1) mod 3;
 
-        if (active_low) then
-          led_o <= not digit;
-        else
-          led_o <= digit;
-        end if;
+        case i is
+          when 0 =>
+            digit      <= decode(data_i(7 downto 4));
+            selected_o <= "001";
+          when 1 =>
+            digit      <= decode(data_i(3 downto 0));
+            selected_o <= "010";
+          when 2 =>
+            digit      <= (others => '0');
+            selected_o <= "100";
+        end case;
+
       end if;
 
     end if;
 
   end process clock;
+
+  set_led : process(digit) is
+  begin
+    if (active_low) then
+      led_o <= not digit;
+    else
+      led_o <= digit;
+    end if;
+  end process set_led;
 
 end architecture rtl;

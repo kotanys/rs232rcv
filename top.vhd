@@ -13,12 +13,11 @@ entity top is
     rst_ni          : in  std_logic;
     data_i          : in  std_logic;
     data_out_o      : out std_logic_vector(n - 1 downto 0);
-    selected_cnt_o  : out std_logic_vector(1 downto 0); -- TODO generic'ize
-	  led_out_o       : out std_logic_vector(6 downto 0);
+    selected_cnt_o  : out std_logic_vector(2 downto 0);
+    led_out_o       : out std_logic_vector(6 downto 0);
     err_o           : out std_logic;
     out_en_o        : out std_logic;
-    clk0_o          : out std_logic;
-    selected_cnt2_o : out std_logic
+    clk0_o          : out std_logic
   );
 end entity top;
 
@@ -62,11 +61,11 @@ begin
       active_low => true
     )
     port map (
-      clki_i         => clk0,
-      rst_ni         => rst_n,
-      data_i         => data_out,
-      led_o          => led_out_o,
-      selected_cnt_o => selected_cnt_o
+      clki_i     => clk0,
+      rst_ni     => rst_n,
+      data_i     => data_out,
+      led_o      => led_out_o,
+      selected_o => selected_cnt_o
     );
 
   data_out_o      <= data_out;
@@ -74,6 +73,5 @@ begin
   pll_rst         <= not rst_ni;
   out_en_o        <= pkt_done;
   clk0_o          <= clk0;
-  selected_cnt2_o <= '0';
 
 end architecture behavioral;

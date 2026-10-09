@@ -14,7 +14,7 @@ architecture behavioral of top_tb is
   signal data_in : std_logic;
   signal clk0    : std_logic; -- 5 MHz PLL output
   signal data    : std_logic_vector(n - 1 downto 0);
-  signal sel     : std_logic_vector(1 downto 0);
+  signal sel     : std_logic_vector(2 downto 0);
   signal led     : std_logic_vector(6 downto 0);
   signal err     : std_logic;
   signal done    : std_logic;
@@ -31,8 +31,6 @@ begin
       data_i => data,
       err_i  => err,
       done_i => done,
-      led_i  => led,
-      sel_i  => sel,
       clki_o => clki,
       rst_no => rst_n,
       data_o => data_in

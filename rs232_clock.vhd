@@ -5,7 +5,7 @@ library ieee;
 
 entity rs232_clock is
   generic (
-    counter_size : natural;
+    counter_size   : natural;
     M_timeout_log2 : natural
   );
   port (

@@ -18,8 +18,6 @@ entity tester is
     data_i : in  std_logic_vector(n - 1 downto 0);
     err_i  : in  std_logic;
     done_i : in  std_logic;
-    led_i  : in  std_logic_vector(6 downto 0);
-    sel_i  : in  std_logic_vector(1 downto 0);
     -- to DUT
     clki_o : out std_logic;
     rst_no : out std_logic;
